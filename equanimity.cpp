@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <string>
 using namespace std;
 
 float equanimity(string f) {
@@ -13,7 +14,7 @@ float equanimity(string f) {
 }
 
 int main() {
-    cout << equanimity("01101001100101101001011001101001") << endl;
+    cout << equanimity("10000000000000000000000000000000") << endl;
     system("pause");
     return 0;
 }
