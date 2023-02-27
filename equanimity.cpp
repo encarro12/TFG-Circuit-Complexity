@@ -178,13 +178,13 @@ void equanimities_of_non_dataset() {
 			}
 		}
 		if (used.count(fun)) i--;
-		float eq_ours_var = equanimity_ours_var(v_fun);
+		else {float eq_ours_var = equanimity_ours_var(v_fun);
 		float eq_ours_avg = equanimity_ours_avg(v_fun);
 		float eq_ism = equanimity_ism(v_fun);
 		used.insert(fun);
 		output1 << fun << "," << eq_ours_var << "\n";
 		output2 << fun << "," << eq_ours_avg << "\n";
-		output3 << fun << "," << eq_ism << "\n";
+		output3 << fun << "," << eq_ism << "\n";}
 	}
 	output1.close();
 	output2.close();
