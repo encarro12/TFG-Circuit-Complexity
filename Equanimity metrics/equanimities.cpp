@@ -28,7 +28,7 @@ int factorial(int x) {
 obtain number of subsets of a certain size
 */
 int number_of_subsets(const int k, const int N) {
-	int prod = 1;
+	unsigned int prod = 1;
 	for (int i = 0; i <= k - 1; i++) {
 		prod *= 2 * (N - i);
 	}
@@ -60,8 +60,6 @@ void update_counters(vector<counters>& count, vector<int> & subset, vector<int>&
 	}
 }
 
-/*
-*/
 void truth_table(vector<int> & x, const int index, const vector<int>& f, int& pos, vector<counters>& count, const int N) {
 	// Base condition
 	if (index < 0) {
@@ -80,9 +78,7 @@ void truth_table(vector<int> & x, const int index, const vector<int>& f, int& po
 	}
 }
 
-/*
-*/
-double equanimity_subsets(const vector<int>& f, const int N) {
+double equanimity_subsets_normalized(const vector<int>& f, const int N) {
 	vector<int> x(N);
 	vector<counters> v_count(N + 1);
 	int pos = 0;
@@ -104,6 +100,34 @@ double equanimity_subsets(const vector<int>& f, const int N) {
 		for (auto item : count)
 			sum += pow(((item.second +0.0)/power) - avg, 2);
 		variance = sum / num_subsets;
+		eq += variance;
+		k++;
+	}
+	return eq;
+}
+
+double equanimity_subsets(const vector<int>& f, const int N) {
+	// Obtain the counters
+	vector<int> x(N); vector<counters> v_count(N + 1); int pos = 0;
+	truth_table(x, N - 1, f, pos, v_count, N);
+
+	// Calculate the equanimity
+	double eq = 0, variance, avg, sum = 0;
+	int k = 0, num_subsets;
+	for (counters count : v_count) {
+		// Obtain the number of subsets of size k
+		num_subsets = number_of_subsets(k, N);
+		// Calculate the average
+		sum = 0;
+		for (auto item : count)
+			sum += (item.second + 0.0);
+		avg = sum / num_subsets;
+		// Calculate the variance (= sigma_k)
+		sum = 0;
+		for (auto item : count)
+			sum += pow((item.second + 0.0) - avg, 2);
+		variance = sum / num_subsets;
+		// Equanimity = sum_{k = 0 to N} (sigma_k)
 		eq += variance;
 		k++;
 	}

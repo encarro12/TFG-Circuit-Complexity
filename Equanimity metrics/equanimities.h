@@ -7,6 +7,8 @@ using namespace std;
 
 double equanimity_subsets(const vector<int>& f, const int N);
 
+double equanimity_subsets_normalized(const vector<int>& f, const int N);
+
 double equanimity_avg(const vector<int>& f, const int N);
 
 double equanimity_var(const vector<int>& f, const int N);
