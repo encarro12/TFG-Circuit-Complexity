@@ -1,5 +1,9 @@
 #include "benchmarks.h"
 
+/*
+given a graph represented as its adjacency matrix G, a subgraph, and
+k \in N, it returns whether the subgraph forms a clique or not
+*/
 bool is_clique(const vector<vector<int>>& G, const int k, vector<int>& subgraph) {
     // Run a loop for all set of edges
     for (int i = 0; i < k; i++) {
@@ -36,6 +40,10 @@ int max_clique(const vector<vector<int>>& G, vector<int>& subgraph, const int i,
     return k;
 }
 
+/*
+given input x, which represents the edges of a graph, ir returns
+its correspondent adjacency matrix
+*/
 vector<vector<int>> binary_to_graph(const vector<int>& x) {
     // Adjacency matrix's lower triangle representation of graph
     vector<vector<int>> G;
@@ -51,6 +59,12 @@ vector<vector<int>> binary_to_graph(const vector<int>& x) {
     return G;
 }
 
+
+/*
+it returns the boolean function asociated with the clique problem by
+iterating through the columns of its truth table and calculating
+the associated outputs
+*/
 void fill_chains(vector<int>& x, const int depth, vector<int> & chain, const int K, const int V) {
     // Base condition
     if (depth == x.size() - 1) { // The -1 must be deleted for the generic version
@@ -67,6 +81,7 @@ void fill_chains(vector<int>& x, const int depth, vector<int> & chain, const int
     }
 }
 
+// calculates N C k
 int binomial_coefficients(int n, int k) {
     vector<int> C(k + 1);
     C[0] = 1;
@@ -77,12 +92,17 @@ int binomial_coefficients(int n, int k) {
     return C[k];
 }
 
+// generic version
 vector<int> clique(int V, int K) {
     vector<int> x(binomial_coefficients(V, 2)), chain;
     fill_chains(x, 0, chain, K, V);
     return chain;
 }
 
+/*
+especial case: in order to be able to create a complete graph of six vertices with N = E = 5,
+we consider the sixth edge is always (or never) added depending of the value of with
+*/
 vector<int> clique(bool with) {
     vector<int> x(6), chain;
     x[5] = with;

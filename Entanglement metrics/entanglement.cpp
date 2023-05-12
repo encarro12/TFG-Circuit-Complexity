@@ -14,6 +14,9 @@ struct hash_fn
 
 using truth_table = unordered_map<vector<int>, int, hash_fn>;
 
+// creates the truth table of a boolean function as a map,
+// in which the key represents an input \vec{x} and the value is
+// its associated output f(\vec{x})
 void create_map_truth_table(truth_table & TT, vector<int>& x, const int depth, const vector<int>& f) {
 	// Base condition
 	if (depth == x.size())
@@ -28,6 +31,7 @@ void create_map_truth_table(truth_table & TT, vector<int>& x, const int depth, c
 	}
 }
 
+// given a subset returns its complementary
 void complementary_subset(const vector<int>& subset, vector<int>& subset_compl, const int N) {
 	int pos = 0;
 	for (int i = 0; i < N; i++) {
@@ -36,7 +40,8 @@ void complementary_subset(const vector<int>& subset, vector<int>& subset_compl, 
 	}
 }
 
-void calculate_n_or_m(vector<int>& x, const vector<int>& subset, const int pos_s, const bool S, 
+// given a subset S, it obtains {g^{\vec{x}_S}}, denoted as fun_set
+void calculate_g(vector<int>& x, const vector<int>& subset, const int pos_s, const bool S, 
 	vector<int>& fun, unordered_set<vector<int>, hash_fn>& fun_set, const int N, const truth_table & TT) {
 	// Base condition
 	if (pos_s < 0) {
@@ -45,7 +50,7 @@ void calculate_n_or_m(vector<int>& x, const vector<int>& subset, const int pos_s
 			vector<int> subset_c;
 			complementary_subset(subset, subset_c, N);
 			vector<int> fun;
-			calculate_n_or_m(x, subset_c, subset_c.size() - 1, false, fun, fun_set, N, TT);
+			calculate_g(x, subset_c, subset_c.size() - 1, false, fun, fun_set, N, TT);
 			fun_set.insert(fun);
 		}
 		// S2
@@ -56,31 +61,34 @@ void calculate_n_or_m(vector<int>& x, const vector<int>& subset, const int pos_s
 	// Recursive conditions
 	else {
 		x[subset[pos_s]] = 1;
-		calculate_n_or_m(x, subset, pos_s - 1, S, fun, fun_set, N, TT);
+		calculate_g(x, subset, pos_s - 1, S, fun, fun_set, N, TT);
 		x[subset[pos_s]] = 0;
-		calculate_n_or_m(x, subset, pos_s - 1, S, fun, fun_set, N, TT);
+		calculate_g(x, subset, pos_s - 1, S, fun, fun_set, N, TT);
 	}
 }
 
-int calculate_nplusm(const vector<int>& subset, const int N, const truth_table & TT) {
-	vector<int> subset_c;
-	complementary_subset(subset, subset_c, N);
+// given a subset S, it returns i(S) + i(S_c), where S_c denotes its complementary
+int calculate_information_shared(const vector<int>& S, const int N, const truth_table & TT) {
+	vector<int> S_c;
+	complementary_subset(S, S_c, N);
 
 	vector<int> x(N); vector<int> fun;
 	unordered_set<vector<int>, hash_fn> fun_set;
-	calculate_n_or_m(x, subset, subset.size() - 1, true, fun, fun_set, N, TT);
-	int n = fun_set.size();
+	calculate_g(x, S, S.size() - 1, true, fun, fun_set, N, TT);
+	// the value of i(S) the size of {g^{\vec{x}_S}} 
+	int i = fun_set.size();
 
 	unordered_set<vector<int>, hash_fn> fun_set2;
-	calculate_n_or_m(x, subset_c, subset_c.size() - 1, true, fun, fun_set2, N, TT);
-	int m = fun_set2.size();
+	calculate_g(x, S_c, S_c.size() - 1, true, fun, fun_set2, N, TT);
+	// the value of i(S_c) the size of {g^{\vec{x}_S_c}} 
+	int i_c = fun_set2.size();
 
-	return n + m;
+	return i + i_c;
 }
 
 int entanglement_recursive(vector<int>& subset, vector<int>& C, int index, const int N, const truth_table & TT) {
-	// Calculate n+m 
-	int ent = subset.size() != N / 2 ? INT_MAX : calculate_nplusm(subset, N, TT);
+	// Calculate i(S) + i(S_c), where |S| = floor(N/2)
+	int ent = subset.size() != N / 2 ? INT_MAX : calculate_information_shared(subset, N, TT);
 
 	// Loop to choose from different elements present
 	// after the current index 
@@ -89,7 +97,7 @@ int entanglement_recursive(vector<int>& subset, vector<int>& C, int index, const
 		// include the C[i] in subset.
 		subset.push_back(C[i]);
 
-		// move onto the next element.
+		// update the value of entnaglement and move onto the next element.
 		ent = min(ent, entanglement_recursive(subset, C, i + 1, N, TT));
 
 		// exclude the C[i] from subset and triggers
@@ -100,7 +108,7 @@ int entanglement_recursive(vector<int>& subset, vector<int>& C, int index, const
 	return ent;
 }
 
-// Function that given a certain boolean function it returns
+// Function that given a certain boolean function returns
 // its entanglement value.
 int entanglement(const vector<int>& f, const int N) {
 	// Initialize the truth table

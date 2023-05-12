@@ -14,10 +14,10 @@ int main() {
 	vector<int> f = clique_nxor_parity(false);
 
 	// Calculate the equanimity
-	double eq = equanimity_ism(f, 5);
+	double eq = equanimity_subsets(f, V);
 
 	// Calculate the entanglement
-	int ent = entanglement(f, 5);
+	int ent = entanglement(f, V);
 
 	cout << "Equanimity: " << eq << " Entanglement: " << ent << endl;
 	return 0;

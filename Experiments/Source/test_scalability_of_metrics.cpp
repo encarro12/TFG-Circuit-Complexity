@@ -27,7 +27,7 @@ void functions_generator(const int N) {
 	ofstream output(filename);
 
 	// Write the header for the csv file
-	output << "function,equanimity_subsets, equanimity_avg, equanimity_var, equanimity_avg_with_negated, equanimity_var_with_negated,entanglement\n";
+	output << "function,equanimity_subsets,equanimity_subsets_normalized,equanimity_importance,entanglement\n";
 
 	if (output.is_open()) {
 		// Get functions randomly outside the dataset and not visited
@@ -45,8 +45,7 @@ void functions_generator(const int N) {
 				i--;
 			else {
 				used.insert(bin);
-				output << bin << "," << equanimity_subsets(f, N) << "," << equanimity_avg(f, N) << "," << equanimity_var(f, N) << "," <<
-					equanimity_avg_with_negative_variables(f, N) << "," << equanimity_var_with_negative_variables(f, N) << "," << entanglement(f, N) << endl;
+				output << bin << "," << equanimity_subsets(f, N) << "," << "," << equanimity_subsets_normalized(f, N) << equanimity_importance(f, N) << "," << entanglement(f, N) << endl;
 			}
 		}
 	}
