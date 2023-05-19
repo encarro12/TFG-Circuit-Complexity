@@ -140,7 +140,6 @@ double equanimity_subsets(const vector<int>& f, const int N) {
 		variance = sum / num_subsets;
 		// add the value of sigma_k into eq
 		eq += variance;
-		k++;
 	}
 	return -eq;
 }
