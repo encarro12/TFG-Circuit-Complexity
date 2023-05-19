@@ -13,7 +13,7 @@ const int N = 5;
 const int NON_DATASET_SAMPLES = 500000000;
 
 // To memorize the functions that are already visited
-unordered_set<string> used;
+unordered_set<unsigned int> used;
 
 void test_non_dataset() {
 	// Initialize random seed
@@ -25,13 +25,14 @@ void test_non_dataset() {
 	ofstream output("non_dataset.csv");
 
 	// Write the header for the csv file
-	output << "function,equanimity_subsets, equanimity_avg, equanimity_var, equanimity_avg_with_negated, equanimity_var_with_negated,entanglement\n";
+	output << "function,equanimity_subsets,equanimiy_subsets_normalized,equanimity_importance,entanglement\n";
 
 	if (output.is_open()) {
 		// Get functions randomly outside the dataset and not visited
 		for (int i = 0; i < NON_DATASET_SAMPLES; i++) {
 			string bin = ""; vector<int> f(32, 0);
 			unsigned int dec = dis(gen);
+			unsigned int aux = dec;
 
 			for (int i = 0; dec > 0; i++)
 			{
@@ -39,12 +40,13 @@ void test_non_dataset() {
 				bin += dec % 2 == 0 ? '0' : '1';
 				dec = dec / 2;
 			}
-			if (used.count(bin))
+			if (used.count(aux))
 				i--;
 			else {
-				used.insert(bin);
-				output << bin << "," << equanimity_subsets(f, N) << "," << equanimity_avg(f, N) << "," << equanimity_var(f, N) << "," <<
-					equanimity_avg_with_negative_variables(f, N) << "," << equanimity_var_with_negative_variables(f, N) << "," << entanglement(f, N) << endl;
+				used.insert(aux);
+				reverse(f.begin(), f.end());
+				reverse(bin.begin(), bin.end());
+				output << bin << "," << equanimity_subsets(f, N) << "," << equanimity_subsets_normalized(f, N) << "," << equanimity_importance(f, N) << "," << entanglement(f, N) << endl;
 			}
 		}
 	}
@@ -55,32 +57,34 @@ void test_non_dataset() {
 
 void test_dataset() {
 	// Open the dataset
-	ifstream input("myfile.txt");
+	ifstream input("fun1804");
 
 	// Open the csv file where the results are going to be stored
 	ofstream output("dataset.csv");
 
 	// Write the header for the csv file
-	output << "function,equanimity_subsets, equanimity_avg, equanimity_var, equanimity_avg_with_negated, equanimity_var_with_negated,entanglement\n";
+	output << "function,size,equanimity_subsets,equanimiy_subsets_normalized,equanimity_importance,entanglement\n";
 
 	// For each function in dataset we calculate the entanglement
 	// and the equanimity and we store the result in the csv.
 	if (input.is_open() && output.is_open()) {
-		unsigned int dec; vector<int> f(32, 0); string bin;
 		while (input) {
+			unsigned int dec,aux; short size; vector<int> f(32, 0); string bin;
 			// Read the function
-			input >> dec >> bin;
+			input >> dec >> size;
+			aux = dec;
 			for (int i = 0; dec > 0; i++)
 			{
 				f[i] = dec % 2;
+				bin += dec % 2 == 0 ? '0' : '1';
 				dec = dec / 2;
 			}
 			reverse(f.begin(), f.end());
+			reverse(bin.begin(), bin.end());
 			// Store the function as used for the analysis of non_dataset functions
-			used.insert(bin);
+			used.insert(aux);
 			// Calculate the entanglement and the equanimity and store the result in the csv
-			output << bin << "," << equanimity_subsets(f, N) << "," << equanimity_avg(f, N) << "," << equanimity_var(f, N) << "," <<
-				equanimity_avg_with_negative_variables(f, N) << "," << equanimity_var_with_negative_variables(f, N) << "," << entanglement(f, N) << endl;
+			output << bin << "," << size << "," << equanimity_subsets(f, N) << "," << equanimity_subsets_normalized(f, N) << "," << equanimity_importance(f, N) << "," << entanglement(f, N) << endl;
 		}
 	}
 	else {
