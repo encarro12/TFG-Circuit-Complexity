@@ -44,17 +44,16 @@ void update_counters(vector<counters>& count, vector<int> & subset, vector<int>&
 	// Update the counter of the corresponding subset
 	count[subset.size()][subset]++;
 
-	// Loop to choose from different elements present
-	// after the current index 'index'
+	// Loop to create every subset of x
 	for (int i = index; i < x.size(); i++) {
 
-		// include the sx[i] in subset.
+		// include x[i] in subset.
 		subset.push_back(x[i]);
 
 		// move onto the next element.
 		update_counters(count, subset, x, i + 1);
 
-		// exclude the sx[i] from subset and triggers
+		// exclude x[i] from subset and triggers
 		// backtracking.
 		subset.pop_back();
 	}

@@ -41,29 +41,29 @@ void complementary_subset(const vector<int>& subset, vector<int>& subset_compl, 
 }
 
 // given a subset S, it obtains {g^{\vec{x}_S}}, denoted as fun_set
-void calculate_g(vector<int>& x, const vector<int>& subset, const int pos_s, const bool S, 
-	vector<int>& fun, unordered_set<vector<int>, hash_fn>& fun_set, const int N, const truth_table & TT) {
+void calculate_g_functions(vector<int>& x, const vector<int>& S, const int pos_s, const bool B, 
+	vector<int>& g, unordered_set<vector<int>, hash_fn>& g_set, const int N, const truth_table & TT) {
 	// Base condition
 	if (pos_s < 0) {
 		// S1
-		if (S) {
-			vector<int> subset_c;
-			complementary_subset(subset, subset_c, N);
-			vector<int> fun;
-			calculate_g(x, subset_c, subset_c.size() - 1, false, fun, fun_set, N, TT);
-			fun_set.insert(fun);
+		if (B) {
+			vector<int> S_c;
+			complementary_subset(S, S_c, N);
+			vector<int> g;
+			calculate_g_functions(x, S_c, S_c.size() - 1, false, g, g_set, N, TT);
+			g_set.insert(g);
 		}
 		// S2
 		else {
-			fun.push_back(TT.at(x));
+			g.push_back(TT.at(x));
 		}
 	}
 	// Recursive conditions
 	else {
-		x[subset[pos_s]] = 1;
-		calculate_g(x, subset, pos_s - 1, S, fun, fun_set, N, TT);
-		x[subset[pos_s]] = 0;
-		calculate_g(x, subset, pos_s - 1, S, fun, fun_set, N, TT);
+		x[S[pos_s]] = 1;
+		calculate_g_functions(x, S, pos_s - 1, B, g, g_set, N, TT);
+		x[S[pos_s]] = 0;
+		calculate_g_functions(x, S, pos_s - 1, B, g, g_set, N, TT);
 	}
 }
 
@@ -74,12 +74,12 @@ int calculate_information_shared(const vector<int>& S, const int N, const truth_
 
 	vector<int> x(N); vector<int> fun;
 	unordered_set<vector<int>, hash_fn> fun_set;
-	calculate_g(x, S, S.size() - 1, true, fun, fun_set, N, TT);
+	calculate_g_functions(x, S, S.size() - 1, true, fun, fun_set, N, TT);
 	// the value of i(S) the size of {g^{\vec{x}_S}} 
 	int i = fun_set.size();
 
 	unordered_set<vector<int>, hash_fn> fun_set2;
-	calculate_g(x, S_c, S_c.size() - 1, true, fun, fun_set2, N, TT);
+	calculate_g_functions(x, S_c, S_c.size() - 1, true, fun, fun_set2, N, TT);
 	// the value of i(S_c) the size of {g^{\vec{x}_S_c}} 
 	int i_c = fun_set2.size();
 
