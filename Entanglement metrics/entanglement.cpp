@@ -22,7 +22,7 @@ void create_map_truth_table(truth_table & TT, vector<int>& x, const int depth, c
 	if (depth == x.size())
 		TT[x] = f[TT.size()];
 
-	// Recursive conditions
+	// Recursive condition
 	else {
 		x[depth] = 1;
 		create_map_truth_table(TT, x, depth + 1, f);

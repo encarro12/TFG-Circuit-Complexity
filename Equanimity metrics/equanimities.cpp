@@ -24,9 +24,7 @@ int factorial(int x) {
 	}
 }
 
-/*
-obtain number of subsets of a certain size
-*/
+// obtain number of subsets of a certain size
 int number_of_subsets(const int k, const int N) {
 	unsigned int prod = 1;
 	for (int i = 0; i <= k - 1; i++) {
